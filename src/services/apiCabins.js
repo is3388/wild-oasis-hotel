@@ -24,3 +24,18 @@ if (error) {
 }
 return null;
 }
+
+export async function createCabin(newCabin) {
+// name of the UI form fields match up with the column names in Supabase  
+const { data, error } = await supabase
+.from('cabin')
+.insert([newCabin])
+.select()
+
+if (error) {
+  console.error(error);
+  throw new Error('Cabins could not be created');
+}
+return data;
+
+}
