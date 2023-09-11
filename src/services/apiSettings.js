@@ -1,6 +1,6 @@
 import supabase from "./supabase";
 
-export async function getSettings() {
+export async function getSettings() { // single() - returns one row of data as a single object not an array
   const { data, error } = await supabase.from("settings").select("*").single();
 
   if (error) {
@@ -10,7 +10,7 @@ export async function getSettings() {
   return data;
 }
 
-// We expect a newSetting object that looks like {setting: newValue}
+// We expect a newSetting object that looks like {setting: newValue} only the field needs to be updated
 export async function updateSetting(newSetting) {
   const { data, error } = await supabase
     .from("settings")
