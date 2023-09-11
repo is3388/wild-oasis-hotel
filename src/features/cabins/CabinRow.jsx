@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { formatCurrency } from '../../utils/helpers';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteCabin } from '../../services/apiCabins';
-import { toast } from 'react-hot-toast';
+import { useState } from 'react';
+import CreateCabinForm from './CreateCabinForm';
+import { useDeleteCabin } from './useDeleteCabin';
 
 const TableRow = styled.div`
   display: grid;
@@ -44,6 +44,8 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }) {
+  const [showForm, setShowForm] = useState(false);
+  const { isEditing, isDeleting, deleteCabin } = useDeleteCabin();
   const {
     id: cabinId,
     name,
@@ -52,39 +54,61 @@ function CabinRow({ cabin }) {
     discount,
     image,
   } = cabin;
-  
+
   // in order to trigger a refetch of data to reflect on the UI
   // get the instance of queryClient (App.js) to call invalidateQueries
   // once the data is invalid, React Query will auto refetch data
-  const queryClient = useQueryClient()
+  /*const queryClient = useQueryClient();
 
   // useMutation is React Query hook for delete, update
   // mutate is a callback function that connects to the button for deletion
   // it will call mutationFn
-  // onSuccess - tell React Query to invalidate the cached data and refetch it 
+  // onSuccess - tell React Query to invalidate the cached data and refetch it
 
-  const { isLoading: isDeleting, mutate } = useMutation({
+  const {
+    isLoading: isDeleting,
+    isEditing,
+    mutate,
+  } = useMutation({
     mutationFn: (id) => deleteCabin(id),
     onSuccess: () => {
-      toast.success('Cabin successfully deleted')
-      queryClient.invalidateQueries({ // specify which query and then trigger refetch to reflect on UI
-        queryKey: ['cabins']
-      })
+      toast.success('Cabin successfully deleted');
+      queryClient.invalidateQueries({
+        // specify which query and then trigger refetch to reflect on UI
+        queryKey: ['cabins'],
+      });
     },
-    onError: err => toast.error(err.message)
+    onError: (err) => toast.error(err.message),
+  }); */
 
-  });
   return (
-    <TableRow>
-      <Img src={image} />
-      <Cabin>{name}</Cabin>
-      <div>Up to {maxCapacity} guests</div>
-      <Price>{formatCurrency(regularPrice)}</Price>
-      <Discount>{formatCurrency(discount)}</Discount>
-      <button onClick={() => mutate(cabinId)} disabled={isDeleting}>
-        Delete
-      </button>
-    </TableRow>
+    <>
+      <TableRow>
+        <Img src={image} />
+        <Cabin>{name}</Cabin>
+        <div>Up to {maxCapacity} guests</div>
+        <Price>{formatCurrency(regularPrice)}</Price>
+        {discount ? (
+          <Discount>{formatCurrency(discount)}</Discount>
+        ) : (
+          <span>&mdash;</span>
+        )}
+        <div>
+          <button
+            onClick={() => setShowForm((show) => !show)}
+            disabled={isEditing}
+          >
+            {' '}
+            Edit
+          </button>
+          <button onClick={() => deleteCabin(cabinId)} disabled={isDeleting}>
+            {' '}
+            Delete
+          </button>
+        </div>
+      </TableRow>
+      {showForm && <CreateCabinForm cabinToEdit={cabin} />}
+    </>
   );
 }
 
