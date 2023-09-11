@@ -3,6 +3,8 @@ import { formatCurrency } from '../../utils/helpers';
 import { useState } from 'react';
 import CreateCabinForm from './CreateCabinForm';
 import { useDeleteCabin } from './useDeleteCabin';
+import { HiTrash, HiPencil, HiSquare2Stack } from 'react-icons/hi2';
+import { useCreateCabin } from './useCreateCabin';
 
 const TableRow = styled.div`
   display: grid;
@@ -45,7 +47,20 @@ const Discount = styled.div`
 
 function CabinRow({ cabin }) {
   const [showForm, setShowForm] = useState(false);
+  const { isCreating, createCabin } = useCreateCabin();
   const { isEditing, isDeleting, deleteCabin } = useDeleteCabin();
+
+  function handleDuplicate() {
+    createCabin({
+      name: `Copy of ${name}`,
+      maxCapacity,
+      regularPrice,
+      discount,
+      image,
+      description
+    });
+  }
+
   const {
     id: cabinId,
     name,
@@ -53,6 +68,7 @@ function CabinRow({ cabin }) {
     regularPrice,
     discount,
     image,
+    description
   } = cabin;
 
   // in order to trigger a refetch of data to reflect on the UI
@@ -94,16 +110,23 @@ function CabinRow({ cabin }) {
           <span>&mdash;</span>
         )}
         <div>
+          <button onClick={handleDuplicate} disabled={isCreating}>
+            <HiSquare2Stack />
+          </button>
           <button
             onClick={() => setShowForm((show) => !show)}
             disabled={isEditing}
           >
-            {' '}
-            Edit
+            <HiPencil />
           </button>
-          <button onClick={() => deleteCabin(cabinId)} disabled={isDeleting}>
-            {' '}
-            Delete
+          <button
+            onClick={() => {
+              setShowForm(false);
+              deleteCabin(cabinId);
+            }}
+            disabled={isDeleting}
+          >
+            <HiTrash />
           </button>
         </div>
       </TableRow>

@@ -28,6 +28,7 @@ export async function createEditCabin(newCabin, id) {
     '/',
     ''
   );
+  // image already uploaded
   const hasImagePath = newCabin.image.startsWith?.(supabaseUrl); // whether use the existing image for edit
 
   const imagePath = hasImagePath
@@ -47,6 +48,8 @@ export async function createEditCabin(newCabin, id) {
     console.error(error);
     throw new Error('Cabins could not be created');
   }
+
+  if (hasImagePath) return data;
 
   // if new cabin created successful, upload image to supabase bucket by specifying the path and cabin-images is bucket name
   const { error: storageError } = await supabase.storage

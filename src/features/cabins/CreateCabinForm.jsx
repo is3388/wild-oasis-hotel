@@ -10,6 +10,8 @@ import { useCreateCabin } from './useCreateCabin';
 import { useEditCabin } from './useEditCabin';
 
 function CreateCabinForm({ cabinToEdit = {} }) {
+  const { isCreating, createCabin } = useCreateCabin();
+  const { isEditing, editCabin } = useEditCabin();
   const { id: editId, ...editValues } = cabinToEdit; // editValues are the values overwrite the existing values on the form not getValues
 
   const isEditSession = Boolean(editId); // if editId exists, true
@@ -27,8 +29,6 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     defaultValues: isEditSession ? editValues : {},
   });
   const { errors } = formState;
-  const { isCreating, createCabin } = useCreateCabin();
-  const { isEditing, editCabin} = useEditCabin();
 
   function onSubmit(data) {
     // only called by handleSubmit if all validations pass
@@ -104,7 +104,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         />
       </FormRow>
 
-      <FormRow label='Discount' error={errors?.discount?.message}>
+      <FormRow label='Discount(0 if no discount)' error={errors?.discount?.message}>
         <Input
           type='number'
           id='discount'
