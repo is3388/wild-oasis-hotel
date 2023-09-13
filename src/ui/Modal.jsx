@@ -1,7 +1,12 @@
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
+import { cloneElement } from 'react';
 
-import { createPortal } from 'react-dom'
+import { createPortal } from 'react-dom';
+import { useState, createContext, useContext } from 'react';
+import { useOutsideClick } from '../hooks/useOutsideClick';
+
+//import { ClickAwayListener } from "@mui/material"; alternative solution
 
 const StyledModal = styled.div`
   position: fixed;
@@ -52,21 +57,62 @@ const Button = styled.button`
   }
 `;
 
-// use react portal from react-dom to allow us to render this Modal outside of the parent component's DOM structure
-// render any place we want inside the DOM tree (elements tab in Chrome dev tool) (in this case is the root body)while it still keeps the element in the original position of the React component tree which can pass props
-// makes this element stays on top of other elements
-// commonly used for modal window, tooltips, menus
-// createPortal fn pass in the JSX as 1st arg, and where you want to render this JSX as 2nd arg (DOM node). in this case the body is the parent element of this element
+// 1. create context api
+const ModalContext = createContext();
 
-export default function Modal({ children, onClose }) {
+// 2. create parent component
+function Modal({ children }) {
+  // multiple windows inside the modal, control which one is open
+  const [openName, setOpenName] = useState('');
+
+  const close = () => setOpenName('');
+  const open = setOpenName;
+
+  return (
+    <ModalContext.Provider value={{ open, close, openName }}>
+      {children}
+    </ModalContext.Provider>
+  );
+}
+
+// 3. create child component. here is the Button but we need to pass in onClick handler by using react cloneElement
+
+function Open({ children, windowName }) {
+  const { open } = useContext(ModalContext);
+  // children is Button with onClick handler in App.js
+  // to add the opens state to the children by using React cloneElement fn
+  // create a new version of children by passing props onClick
+  return cloneElement(children, { onClick: () => open(windowName) });
+}
+
+// create child component which is the window contains this portal with JSX
+// add global event listener to detect click outside the modal to close the modal
+function Window({ children, name }) {
+  const { openName, close } = useContext(ModalContext);
+
+  const ref = useOutsideClick(close); // pass in close handler
+
+  if (name !== openName) return null;
+
+  // onCloseModal which is the prop. The one might be optional in CreateCabinForm
   return createPortal(
     <Overlay>
-    <StyledModal>
-      <Button onClick={onClose}><HiXMark /></Button>
-      <div>{children}</div>
-    </StyledModal>
+      {/*<ClickAwayListener onClickAway={close}> */}
+        <StyledModal ref={ref}>
+          <Button onClick={close}>
+          <HiXMark />
+          </Button>
+          <div>{cloneElement(children, { onCloseModal: close })}</div>
+        </StyledModal>
+      {/*</ClickAwayListener>*/}
     </Overlay>,
     document.body
     // document.querySelector()
   );
 }
+
+// 4. add child components as properties to parent component
+Modal.Open = Open;
+Modal.Window = Window;
+
+export default Modal;
