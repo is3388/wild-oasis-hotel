@@ -1,4 +1,7 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import { HiXMark } from 'react-icons/hi2';
+
+import { createPortal } from 'react-dom'
 
 const StyledModal = styled.div`
   position: fixed;
@@ -48,3 +51,22 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+
+// use react portal from react-dom to allow us to render this Modal outside of the parent component's DOM structure
+// render any place we want inside the DOM tree (elements tab in Chrome dev tool) (in this case is the root body)while it still keeps the element in the original position of the React component tree which can pass props
+// makes this element stays on top of other elements
+// commonly used for modal window, tooltips, menus
+// createPortal fn pass in the JSX as 1st arg, and where you want to render this JSX as 2nd arg (DOM node). in this case the body is the parent element of this element
+
+export default function Modal({ children, onClose }) {
+  return createPortal(
+    <Overlay>
+    <StyledModal>
+      <Button onClick={onClose}><HiXMark /></Button>
+      <div>{children}</div>
+    </StyledModal>
+    </Overlay>,
+    document.body
+    // document.querySelector()
+  );
+}

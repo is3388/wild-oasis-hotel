@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { useCreateCabin } from './useCreateCabin';
 import { useEditCabin } from './useEditCabin';
 
-function CreateCabinForm({ cabinToEdit = {} }) {
+function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
   const { isCreating, createCabin } = useCreateCabin();
   const { isEditing, editCabin } = useEditCabin();
   const { id: editId, ...editValues } = cabinToEdit; // editValues are the values overwrite the existing values on the form not getValues
@@ -39,10 +39,23 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     if (isEditSession)
       editCabin(
         { newCabinData: { ...data, image }, id: editId },
-        { onSuccess: (data) => reset() }
+        {
+          onSuccess: (data) => {
+            reset();
+            onCloseModal?.();
+          },
+        }
       );
     else
-      createCabin({ ...data, image: image }, { onSuccess: (data) => reset() }); // object contains a callback gets access to the newly created cabin data returned
+      createCabin(
+        { ...data, image: image },
+        {
+          onSuccess: (data) => {
+            reset();
+            onCloseModal?.();
+          },
+        }
+      ); // object contains a callback gets access to the newly created cabin data returned
   }
 
   function onError(errors) {
@@ -70,7 +83,8 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     onError: (err) => toast.error(err.message),
   }); */
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form onSubmit={handleSubmit(onSubmit, onError)}
+    type={onCloseModal ? 'modal' : 'regular'}>
       <FormRow label='Cabin Name' error={errors?.name?.message}>
         <Input
           type='text'
@@ -104,7 +118,10 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         />
       </FormRow>
 
-      <FormRow label='Discount(0 if no discount)' error={errors?.discount?.message}>
+      <FormRow
+        label='Discount(0 if no discount)'
+        error={errors?.discount?.message}
+      >
         <Input
           type='number'
           id='discount'
@@ -145,11 +162,13 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
       <FormRow>
         {/* type is an HTML attribute! */}
+        {/* form resuable - so that it might not pass onCloseModal to Cancel button */}
         <Button
           variation='secondary'
           type='reset'
           $size='medium'
           $variation='primary'
+          onClick={() => onCloseModal?.()}
         >
           Cancel
         </Button>
