@@ -1,6 +1,10 @@
-import styled from "styled-components";
+import { useState, createContext, useContext } from 'react';
+import { createPortal } from 'react-dom';
+import { HiEllipsisVertical } from 'react-icons/hi2';
+import styled from 'styled-components';
+import { useOutsideClick } from '../hooks/useOutsideClick';
 
-const StyledMenu = styled.div`
+const Menu = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -32,8 +36,8 @@ const StyledList = styled.ul`
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-md);
 
-  right: ${(props) => props.position.x}px;
-  top: ${(props) => props.position.y}px;
+  right: ${(props) => props.$position.x}px;
+  top: ${(props) => props.$position.y}px;
 `;
 
 const StyledButton = styled.button`
@@ -60,3 +64,78 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
+
+const MenusContext = createContext();
+
+// parent component
+function Menus({ children }) {
+  const [openId, setOpenId] = useState(''); // none of menu is open
+  const [position, setPosition] = useState(null); // contains x and y
+  const close = () => setOpenId('');
+  const open = setOpenId;
+
+  return (
+    <MenusContext.Provider value={{ openId, open, close, position, setPosition }}>
+      <div>{children}</div>
+    </MenusContext.Provider>
+  );
+}
+
+// child components
+function Toggle({ id }) {
+  // toggle the list of menu items - duplicate, edit, delete
+  const { openId, open, close, setPosition } = useContext(MenusContext);
+
+  function handleClick(e) {
+    // each button on the list corresponding to the menu
+    // to get the position of the closest button that fires off the event
+    // to determine where we want to render the list
+    e.stopPropagation();
+    const rectangle = e.target.closest('button').getBoundingClientRect();
+    setPosition({
+      x: window.innerWidth - rectangle.width - rectangle.x,
+      y: rectangle.height + rectangle.y + 8
+      }
+    );
+    // first time no menu is open or open menu is different from the menu button you just click
+    openId === '' || openId !== id ? open(id) : close();
+  }
+
+  return (
+    <StyledToggle onClick={handleClick}>
+      <HiEllipsisVertical />
+    </StyledToggle>
+  );
+}
+
+function List({ id, children }) {
+  const { openId, position, close } = useContext(MenusContext);
+  const ref = useOutsideClick(close); // to handle outside of the context menu click
+
+  if (openId !== id) return null;
+  return createPortal(
+    <StyledList $position={position} ref={ref}>{children}</StyledList>,
+    document.body
+  );
+}
+
+function Button({ children, icon, onClick }) {
+  const { close } = useContext(MenusContext);
+  // inside the List
+  function handleClick(e) {
+    onClick?.() // optionally call onClick
+    close()
+  }
+  return (
+    <li>
+      <StyledButton onClick={handleClick}>{icon}<span>{children}</span></StyledButton>
+    </li>
+  );
+}
+
+Menus.Menu = Menu; // only for styling - div with display flex
+Menus.Toggle = Toggle;
+Menus.List = List;
+Menus.Button = Button;
+
+export default Menus;
