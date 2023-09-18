@@ -24,22 +24,44 @@ const TableHeader = styled.header`
 
 function CabinTable() {
   const { isLoading, cabins } = useCabins();
-  const [searchParams] = useSearchParams()
+  const [searchParams] = useSearchParams();
 
   if (isLoading) return <Spinner />;
 
-  const filterValue = searchParams.get('discount') || 'all'; // default or with-discount or no-discount 
+  const filterValue = searchParams.get('discount') || 'all'; // default or with-discount or no-discount
 
+  // filtering
   let filteredCabins;
-  
-  if (filterValue === 'all')
-  filteredCabins = cabins;
+
+  if (filterValue === 'all') filteredCabins = cabins;
 
   if (filterValue === 'no-discount')
-  filteredCabins = cabins.filter((cabin) => cabin.discount === 0)
+    filteredCabins = cabins.filter((cabin) => cabin.discount === 0);
 
   if (filterValue === 'with-discount')
-  filteredCabins = cabins.filter((cabin) => cabin.discount > 0)
+    filteredCabins = cabins.filter((cabin) => cabin.discount > 0);
+
+  // sorting
+  const sortBy = searchParams.get('sortBy') || 'name-asc';// default value
+  const [field, direction] = sortBy.split('-'); // split the URL query part
+  const modifier = direction === 'asc' ? 1 : -1;
+
+  function compare(a, b) {
+    if (a["name"].toLowerCase() < b["name"].toLowerCase()) {
+      return -1 * modifier;
+    }
+    if (a["name"].toLowerCase() > b["name"].toLowerCase()) {
+      return 1 * modifier;
+    }
+    return 0;
+  }
+ 
+  const sortedCabins =
+    field === "name"
+      ? filteredCabins.sort(compare)
+      : filteredCabins.sort((a, b) => (a[field] - b[field]) * modifier);
+  //const sortedCabins =
+  //  filteredCabins.sort((a, b) => (a[field] - b[field]) * modifier);
 
   return (
     <Menus>
@@ -57,7 +79,7 @@ function CabinTable() {
       </Table.Body>
       use data prop and render prop to tell it render data*/}
         <Table.Body
-          data={filteredCabins}
+          data={sortedCabins}
           render={(cabin) => <CabinRow cabin={cabin} key={cabin.id} />}
         />
       </Table>
