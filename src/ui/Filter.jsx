@@ -50,6 +50,7 @@ export default function Filter({ filterField, options }) {
     // localhost:5173/cabins?discount=all
     // then the cabin table will read the state and display the data accordingly
     searchParams.set(filterField, value);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
   }
 
