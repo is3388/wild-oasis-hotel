@@ -11,10 +11,11 @@ export function useCheckin() {
   const navigate = useNavigate();
 
   const { mutate: checkin, isLoading: isCheckingIn } = useMutation({
-    mutationFn: (bookingId) =>
+    mutationFn: ({bookingId, breakfast}) => // pass in not only id, but also others for breakfast
       updateBooking(bookingId, {
         isPaid: true,
         status: 'checked-in',
+        ...breakfast
       }),
     // data returned from the mutationFn which is updateBooking fn
     // active: true meaning to invalidate all the queries currently active on the page
