@@ -1,5 +1,26 @@
 import supabase from './supabase';
 
+// after user submit the form and supabase successfully authenticates the user
+// supabase redirects the user to supabase auth callback URL. 
+// By defaults to the SITE_URL. modify the SITE_URL or add additional redirect URLs
+// It is the policy which marks the user to be authenticated.
+// The authenticated role is special in Supabase, it tells the API that this is an authenticated user 
+// and will know to compare the JWT against any policies you've added to the requested resource.
+
+export async function signup({fullName, email, password}) {
+  const { data, error } = await supabase.auth.signUp({
+    email, password, options: {
+      data: { // anything about the user
+        fullName,
+        avatar: ''
+      }
+    }
+  })
+  if (error) throw new Error(error.message);
+
+  return data;
+}
+
 export async function login({ email, password }) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
