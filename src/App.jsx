@@ -14,6 +14,7 @@ import GlobalStyles from './styles/GlobalStyles';
 import AppLayout from './ui/AppLayout';
 import Booking from './pages/Booking';
 import Checkin from './pages/Checkin';
+import ProtectedRoute from './ui/ProtectedRoute';
 
 // since we don't want index element the same as dashboard route
 // we use Navigate component provided by react-router to redirect immediately to dashboard page
@@ -38,7 +39,7 @@ export default function App() {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          <Route element={<AppLayout />}>
+          <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route index element={<Navigate replace to='dashboard' />} />
             <Route path='dashboard' element={<Dashboard />} />
             <Route path='bookings' element={<Bookings />} />

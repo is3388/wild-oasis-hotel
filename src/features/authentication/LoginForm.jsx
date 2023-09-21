@@ -16,7 +16,13 @@ function LoginForm() {
     e.preventDefault();
     if (!email || !password) return;
 
-    login({ email, password });
+    // onSettled is mutation option
+    login({ email, password }, {
+      onSettled: () => { 
+        setEmail('')
+        setPassword('')
+      }
+    });
   }
 
   return (
