@@ -14,7 +14,7 @@ export async function login({ email, password }) {
 export async function getCurrentUser() {
   // supabase stores JWT token in local storage
   const { data: session } = await supabase.auth.getSession();
-  if (!session.session) return null; // no current user
+  if (!session.session) return null; // no session meaning no current user
 
   // more secure to redowload from supabase instead from session
   const { data, error } = await supabase.auth.getUser();
@@ -22,4 +22,9 @@ export async function getCurrentUser() {
 
   if (error) throw new Error(error.message);
   return data?.user; // data contains user and session info
+}
+
+export async function logout() {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw new Error(error.message);
 }
