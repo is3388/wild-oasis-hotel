@@ -9,8 +9,8 @@ export function useUpdateUser() {
     mutationFn: updateCurrentUser, // function name from services
     onSuccess: ({user}) => { // manually update in the cache
       toast.success('User is successfully updated');
-      queryClient.setQueryData('user', user) // key and value
-      queryClient.invalidateQueries({ queryKey: ['user'] }); // aim to refetch data and trigger UI sync up
+      queryClient.setQueryData(['user'], user.user) // key and value
+      //queryClient.invalidateQueries({ queryKey: ['user'] }); // aim to refetch data and trigger UI sync up
     },
     onError: (err) => toast.error(err.message),
   });
