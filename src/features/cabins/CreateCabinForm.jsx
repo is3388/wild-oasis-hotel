@@ -84,8 +84,10 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
     onError: (err) => toast.error(err.message),
   }); */
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}
-    type={onCloseModal ? 'modal' : 'regular'}>
+    <Form
+      onSubmit={handleSubmit(onSubmit, onError)}
+      type={onCloseModal ? 'modal' : 'regular'}
+    >
       <FormRow label='Cabin Name' error={errors?.name?.message}>
         <Input
           type='text'
@@ -165,10 +167,9 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
         {/* type is an HTML attribute! */}
         {/* form resuable - so that it might not pass onCloseModal to Cancel button */}
         <Button
-          variation='secondary'
+          $variation='secondary'
           type='reset'
           $size='medium'
-          $variation='primary'
           onClick={() => onCloseModal?.()}
         >
           Cancel

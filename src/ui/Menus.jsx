@@ -75,7 +75,9 @@ function Menus({ children }) {
   const open = setOpenId;
 
   return (
-    <MenusContext.Provider value={{ openId, open, close, position, setPosition }}>
+    <MenusContext.Provider
+      value={{ openId, open, close, position, setPosition }}
+    >
       <div>{children}</div>
     </MenusContext.Provider>
   );
@@ -94,9 +96,8 @@ function Toggle({ id }) {
     const rectangle = e.target.closest('button').getBoundingClientRect();
     setPosition({
       x: window.innerWidth - rectangle.width - rectangle.x,
-      y: rectangle.height + rectangle.y + 8
-      }
-    );
+      y: rectangle.height + rectangle.y + 8,
+    });
     // first time no menu is open or open menu is different from the menu button you just click
     openId === '' || openId !== id ? open(id) : close();
   }
@@ -110,11 +111,13 @@ function Toggle({ id }) {
 
 function List({ id, children }) {
   const { openId, position, close } = useContext(MenusContext);
-  const ref = useOutsideClick(close); // to handle outside of the context menu click
+  const ref = useOutsideClick(close, false); // to handle outside of the context menu click
 
   if (openId !== id) return null;
   return createPortal(
-    <StyledList $position={position} ref={ref}>{children}</StyledList>,
+    <StyledList $position={position} ref={ref}>
+      {children}
+    </StyledList>,
     document.body
   );
 }
@@ -123,12 +126,15 @@ function Button({ children, icon, onClick }) {
   const { close } = useContext(MenusContext);
   // inside the List
   function handleClick(e) {
-    onClick?.() // optionally call onClick
-    close()
+    onClick?.(); // optionally call onClick
+    close();
   }
   return (
     <li>
-      <StyledButton onClick={handleClick}>{icon}<span>{children}</span></StyledButton>
+      <StyledButton onClick={handleClick}>
+        {icon}
+        <span>{children}</span>
+      </StyledButton>
     </li>
   );
 }
