@@ -42,8 +42,7 @@ export async function getCurrentUser() {
 
   // more secure to redowload from supabase instead from session
   const { data, error } = await supabase.auth.getUser();
-  console.log(data);
-
+  
   if (error) throw new Error(error.message);
   //return data?.user; // data contains user and session info  
   return data?.user; // data contains user and session info  
