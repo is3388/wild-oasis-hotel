@@ -45,7 +45,8 @@ export async function getCurrentUser() {
   console.log(data);
 
   if (error) throw new Error(error.message);
-  return data?.user; // data contains user and session info
+  //return data?.user; // data contains user and session info  
+  return data?.user; // data contains user and session info  
 }
 
 export async function logout() {

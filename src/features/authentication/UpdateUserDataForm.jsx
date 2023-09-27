@@ -45,39 +45,42 @@ function UpdateUserDataForm() {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormRow label='Email address'>
-        <Input value={email} disabled={isUpdating} />
+      <FormRow label="Email address">
+        <Input value={email} id="email" readOnly />
       </FormRow>
-      <FormRow label='Full name'>
+
+      <FormRow label="Full name">
         <Input
-          type='text'
+          type="text"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
-          id='fullName'
+          id="fullName"
           disabled={isUpdating}
         />
       </FormRow>
-      <FormRow label='Avatar image'>
+
+      <FormRow label="Avatar image">
         <FileInput
-          id='avatar'
-          accept='image/*'
+          id="avatar"
+          accept="image/*"
           onChange={(e) => setAvatar(e.target.files[0])}
           disabled={isUpdating}
         />
       </FormRow>
+
       <FormRow>
         <Button
-          type='reset'
-          $variation='secondary'
-          onClick={handleCancel}
+          type="reset"
+          $variation="secondary"
           disabled={isUpdating}
+          onClick={handleCancel}
         >
           Cancel
         </Button>
         <Button disabled={isUpdating}>Update account</Button>
       </FormRow>
     </Form>
-  );
+  )
 }
 
 export default UpdateUserDataForm;

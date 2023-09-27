@@ -12,10 +12,10 @@ import Spinner from '../../ui/Spinner';
 // getValues - get value of particular field
 function SignupForm() {
 
+  const { isLoading, signup} = useSignup();
   const { register, formState, getValues, handleSubmit, reset } = useForm();
   const { errors } = formState;
-  const { isLoading, signup} = useSignup();
-
+ 
   function onSubmit({fullName, email, password}) {
     signup({
       fullName,
