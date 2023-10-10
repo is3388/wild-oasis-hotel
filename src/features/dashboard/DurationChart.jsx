@@ -1,6 +1,13 @@
 import styled from 'styled-components';
 import Heading from '../../ui/Heading';
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from 'recharts';
 import { useDarkMode } from '../../hooks/useDarkMode';
 
 const ChartBox = styled.div`
@@ -21,89 +28,96 @@ const ChartBox = styled.div`
   }
 `;
 
+const NoActivity = styled.p`
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin-top: 2.8rem;
+`;
+
 const startDataLight = [
   {
-    duration: "1 night",
+    duration: '1 night',
     value: 0,
-    color: "#ef4444",
+    color: '#ef4444',
   },
   {
-    duration: "2 nights",
+    duration: '2 nights',
     value: 0,
-    color: "#f97316",
+    color: '#f97316',
   },
   {
-    duration: "3 nights",
+    duration: '3 nights',
     value: 0,
-    color: "#eab308",
+    color: '#eab308',
   },
   {
-    duration: "4-5 nights",
+    duration: '4-5 nights',
     value: 0,
-    color: "#84cc16",
+    color: '#84cc16',
   },
   {
-    duration: "6-7 nights",
+    duration: '6-7 nights',
     value: 0,
-    color: "#22c55e",
+    color: '#22c55e',
   },
   {
-    duration: "8-14 nights",
+    duration: '8-14 nights',
     value: 0,
-    color: "#14b8a6",
+    color: '#14b8a6',
   },
   {
-    duration: "15-21 nights",
+    duration: '15-21 nights',
     value: 0,
-    color: "#3b82f6",
+    color: '#3b82f6',
   },
   {
-    duration: "21+ nights",
+    duration: '21+ nights',
     value: 0,
-    color: "#a855f7",
+    color: '#a855f7',
   },
 ];
 
 const startDataDark = [
   {
-    duration: "1 night",
+    duration: '1 night',
     value: 0,
-    color: "#b91c1c",
+    color: '#b91c1c',
   },
   {
-    duration: "2 nights",
+    duration: '2 nights',
     value: 0,
-    color: "#c2410c",
+    color: '#c2410c',
   },
   {
-    duration: "3 nights",
+    duration: '3 nights',
     value: 0,
-    color: "#a16207",
+    color: '#a16207',
   },
   {
-    duration: "4-5 nights",
+    duration: '4-5 nights',
     value: 0,
-    color: "#4d7c0f",
+    color: '#4d7c0f',
   },
   {
-    duration: "6-7 nights",
+    duration: '6-7 nights',
     value: 0,
-    color: "#15803d",
+    color: '#15803d',
   },
   {
-    duration: "8-14 nights",
+    duration: '8-14 nights',
     value: 0,
-    color: "#0f766e",
+    color: '#0f766e',
   },
   {
-    duration: "15-21 nights",
+    duration: '15-21 nights',
     value: 0,
-    color: "#1d4ed8",
+    color: '#1d4ed8',
   },
   {
-    duration: "21+ nights",
+    duration: '21+ nights',
     value: 0,
-    color: "#7e22ce",
+    color: '#7e22ce',
   },
 ];
 
@@ -135,10 +149,17 @@ function prepareData(startData, stays) {
 }
 
 function DurationChart({ confirmedStays }) {
-  const {isDarkMode} = useDarkMode();
+  const { isDarkMode } = useDarkMode();
   const startData = isDarkMode ? startDataDark : startDataLight;
   const data = prepareData(startData, confirmedStays);
-  
+
+  if (data.length === 0)
+    return (
+      <ChartBox>
+        <Heading as='h2'>Stay duration summary</Heading>{' '}
+        <NoActivity>No data available</NoActivity>
+      </ChartBox>
+    );
   return (
     <ChartBox>
       <Heading as='h2'>Stay duration summary</Heading>
@@ -156,11 +177,11 @@ function DurationChart({ confirmedStays }) {
           >
             {data.map((entry) => (
               <Cell
-              fill={entry.color}
-              stroke={entry.color}
-              key={entry.duration}
+                fill={entry.color}
+                stroke={entry.color}
+                key={entry.duration}
               />
-              ))}
+            ))}
           </Pie>
           <Tooltip />
           <Legend

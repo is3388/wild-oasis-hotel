@@ -42,9 +42,14 @@ export async function getCurrentUser() {
 
   // more secure to redowload from supabase instead from session
   const { data, error } = await supabase.auth.getUser();
+
+  /*const { data, error } = await supabase
+  .from('users')
+  .select('id, email, fullName, avatar') // Include fullName and any other custom fields
+  .eq('id', session.user.id)
+  .single(); */
   
   if (error) throw new Error(error.message);
-  //return data?.user; // data contains user and session info  
   return data?.user; // data contains user and session info  
 }
 
